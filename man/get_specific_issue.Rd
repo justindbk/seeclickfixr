@@ -55,10 +55,4 @@ The unique ID number of the requested issue.
 \seealso{
 \code{\link{get_city_issues}}
 }
-\examples{
 
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
