@@ -1,7 +1,8 @@
 get_issues_by_type <- function(city, issue_type, status = "open,acknowledged,closed,archived", limit = 100) {
   total <- 0
   page <- 1
-  url <- paste("https://seeclickfix.com/api/v2/issues?place_url=",city,"&search=",issue_type,"&status=",status, "&per_page=",limit,"&page=",page,sep = "")
+  pagelimit <- min(100,limit)
+  url <- paste("https://seeclickfix.com/api/v2/issues?place_url=",city,"&search=",issue_type,"&status=",status, "&per_page=",pagelimit,"&page=",page,sep = "")
   url <- gsub(" ","%20",x=url)
   rawdata <- RCurl::getURL(url)
   scf <- jsonlite::fromJSON(txt=rawdata,simplifyDataFrame = T,flatten=F)
@@ -77,10 +78,13 @@ get_issues_by_type <- function(city, issue_type, status = "open,acknowledged,clo
   
   total <- nrow(allout)
   
+  ## check if total n issues < inputted limit:
+  limit <- min(limit,scf$metadata$pagination$entries)
+  
   while(limit>total){
     page <- page+1
-    if((limit-total)<100){limit <- (limit-total)}
-    url <- paste("https://seeclickfix.com/api/v2/issues?place_url=",city,"&search=",issue_type,"&status=",status, "&per_page=",limit,"&page=",page,sep = "")
+    if((limit-total)<100){pagelimit <- (limit-total)}
+    url <- paste("https://seeclickfix.com/api/v2/issues?place_url=",city,"&search=",issue_type,"&status=",status, "&per_page=",pagelimit,"&page=",page,sep = "")
     url <- gsub(" ","%20",x=url)
     rawdata <- RCurl::getURL(url)
     scf <- jsonlite::fromJSON(txt=rawdata,simplifyDataFrame = T,flatten=F)

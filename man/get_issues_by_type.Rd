@@ -4,7 +4,9 @@ a given type or types in the specified location, specified either by
 coordinates or by name/address. } \usage{ get_issues_by_type(city, issue_type,
 status = "open,acknowledged,closed,archived", limit = 100) } \arguments{ 
 \item{city}{ A written description of the location for which issue types
-should be returned. If city is specified, lat/long should not be. } 
+should be returned. If city is specified, lat/long should not be. Make sure to
+use same spelling/capitalization of city as it appears in the 'url_name' field
+returned by list_places()} 
 \item{issue_type}{ Type of issues which should be returned. If multiple types,
 they should be separated by commas and without spaces. } \item{status}{ Which
 status types of issues should be returned. Separate statuses should be

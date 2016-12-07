@@ -1,6 +1,7 @@
 list_issue_types <- function(city = NULL, lat = NULL, long = NULL, limit = 100) {
   total <- 0
   page <- 1
+  pagelimit <- min(100,limit)
   if(length(city)>0 & (length(lat)>0 | length(long)>0)){
     lat <- NULL
     long <- NULL
@@ -9,7 +10,7 @@ list_issue_types <- function(city = NULL, lat = NULL, long = NULL, limit = 100) 
   if((length(lat)>0 & length(long)<1) | length(lat)<1 & length(long)>0){
     stop("Specify valid lat/long pair or city")
   }
-  url <- paste("https://seeclickfix.com/api/v2/issues/new?",ifelse(length(city)>0,paste("address=",city,sep=""),""),ifelse(length(lat)>0,paste("lat=", lat,"&lng=",long,sep=""),""),"&per_page=",limit,"&page=",page, sep = "")
+  url <- paste("https://seeclickfix.com/api/v2/issues/new?",ifelse(length(city)>0,paste("address=",city,sep=""),""),ifelse(length(lat)>0,paste("lat=", lat,"&lng=",long,sep=""),""),"&per_page=",pagelimit,"&page=",page, sep = "")
   url <- gsub(" ","%20",x=url)
   rawdata <- RCurl::getURL(url)
   scf <- jsonlite::fromJSON(txt=rawdata,simplifyDataFrame = T,flatten=F)
@@ -21,10 +22,13 @@ list_issue_types <- function(city = NULL, lat = NULL, long = NULL, limit = 100) 
   
   total <- nrow(allout)
   
+  ## check if total n issues < inputted limit:
+  limit <- min(limit,scf$metadata$pagination$entries)
+  
   while(limit>total){
     page <- page+1
-    if((limit-total)<100){limit <- (limit-total)}
-    url <- paste("https://seeclickfix.com/api/v2/issues/new?address=", city,"&per_page=",limit,"&page=",page, sep = "")
+    if((limit-total)<100){pagelimit <- (limit-total)}
+    url <- paste("https://seeclickfix.com/api/v2/issues/new?address=", city,"&per_page=",pagelimit,"&page=",page, sep = "")
     url <- gsub(" ","%20",x=url)
     rawdata <- RCurl::getURL(url)
     scf <- jsonlite::fromJSON(txt=rawdata,simplifyDataFrame = T,flatten=F)
