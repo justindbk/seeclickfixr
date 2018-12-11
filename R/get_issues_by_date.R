@@ -4,7 +4,9 @@ get_issues_by_date <- function(city,after = Sys.time()-86400, before = Sys.time(
   pagelimit <- min(100,limit)
   after <- as.character(after,format="%Y-%m-%dT%H:%M:%SZ")
   before <- as.character(before,format="%Y-%m-%dT%H:%M:%SZ")
-  url <- paste("https://seeclickfix.com/api/v2/issues?place_url=",city,"&after=",after,"&before=",before,"&status=",status, "&per_page=",pagelimit,"&page=",page,sep = "")
+  url <- paste0("https://seeclickfix.com/api/v2/issues?place_url=",city,
+                "&after=",after,"&before=",before,
+                "&status=",status, "&per_page=",pagelimit,"&page=",page)
   url <- gsub(" ","%20",x=url)
   rawdata <- RCurl::getURL(url)
   scf <- jsonlite::fromJSON(txt=rawdata,simplifyDataFrame = T,flatten=F)
@@ -86,7 +88,9 @@ get_issues_by_date <- function(city,after = Sys.time()-86400, before = Sys.time(
   while(limit>total){
     page <- page+1
     if((limit-total)<100){pagelimit <- (limit-total)}
-    url <- paste("https://seeclickfix.com/api/v2/issues?place_url=",city,"&after=",after,"&before=",before,"&status=",status, "&per_page=",pagelimit,"&page=",page,sep = "")
+    url <- paste0("https://seeclickfix.com/api/v2/issues?place_url=",city,
+                  "&after=",after,"&before=",before,
+                  "&status=",status, "&per_page=",pagelimit,"&page=",page,sep = "")
     url <- gsub(" ","%20",x=url)
     rawdata <- RCurl::getURL(url)
     scf <- jsonlite::fromJSON(txt=rawdata,simplifyDataFrame = T,flatten=F)

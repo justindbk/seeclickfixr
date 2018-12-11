@@ -2,11 +2,13 @@ get_issues_by_type <- function(city, issue_type, status = "open,acknowledged,clo
   total <- 0
   page <- 1
   pagelimit <- min(100,limit)
-  url <- paste("https://seeclickfix.com/api/v2/issues?place_url=",city,"&search=",issue_type,"&status=",status, "&per_page=",pagelimit,"&page=",page,sep = "")
+  url <- paste0("https://seeclickfix.com/api/v2/issues?place_url=",city,"&search=",issue_type,
+                "&status=",status, "&per_page=",pagelimit,"&page=",page)
   url <- gsub(" ","%20",x=url)
   rawdata <- RCurl::getURL(url)
   scf <- jsonlite::fromJSON(txt=rawdata,simplifyDataFrame = T,flatten=F)
   
+  if(scf$metadata$pagination$entries>0){
   issue_id = scf$issues$id
   issue_status = scf$issues$status
   summary = scf$issues$summary
@@ -27,7 +29,7 @@ get_issues_by_type <- function(city, issue_type, status = "open,acknowledged,clo
   representative_image_url = scf$issues$media$representative_image_url
   issue_types = scf$issues$point$type
   # scf$issues$point$coordinates # duplicate of lat/lng
-  url = scf$issues$url
+  api_url = scf$issues$url
   html_url = scf$issues$html_url
   comment_url = scf$issues$comment_url
   flag_url = scf$issues$flag_url
@@ -40,7 +42,7 @@ get_issues_by_type <- function(city, issue_type, status = "open,acknowledged,clo
   reporter_civicpoints = scf$issues$reporter$civic_points
   reporter_avatar_full = scf$issues$reporter$avatar$full
   reporter_avatar_square = scf$issues$reporter$avatar$square_100x100
-  
+  }
   allout <- data.frame(
     issue_id,
     issue_status,
@@ -61,7 +63,7 @@ get_issues_by_type <- function(city, issue_type, status = "open,acknowledged,clo
     image_square_100x100,
     representative_image_url,
     issue_types,
-    url,
+    api_url,
     html_url,
     comment_url,
     flag_url,
@@ -84,7 +86,9 @@ get_issues_by_type <- function(city, issue_type, status = "open,acknowledged,clo
   while(limit>total){
     page <- page+1
     if((limit-total)<100){pagelimit <- (limit-total)}
-    url <- paste("https://seeclickfix.com/api/v2/issues?place_url=",city,"&search=",issue_type,"&status=",status, "&per_page=",pagelimit,"&page=",page,sep = "")
+    url <- paste0("https://seeclickfix.com/api/v2/issues?place_url=",city,
+                  "&search=",issue_type,"&status=",status, 
+                  "&per_page=",pagelimit,"&page=",page)
     url <- gsub(" ","%20",x=url)
     rawdata <- RCurl::getURL(url)
     scf <- jsonlite::fromJSON(txt=rawdata,simplifyDataFrame = T,flatten=F)
@@ -109,7 +113,7 @@ get_issues_by_type <- function(city, issue_type, status = "open,acknowledged,clo
     representative_image_url = scf$issues$media$representative_image_url
     issue_types = scf$issues$point$type
     # scf$issues$point$coordinates # duplicate of lat/lng
-    url = scf$issues$url
+    api_url = scf$issues$url
     html_url = scf$issues$html_url
     comment_url = scf$issues$comment_url
     flag_url = scf$issues$flag_url
@@ -143,7 +147,7 @@ get_issues_by_type <- function(city, issue_type, status = "open,acknowledged,clo
       image_square_100x100,
       representative_image_url,
       issue_types,
-      url,
+      api_url,
       html_url,
       comment_url,
       flag_url,

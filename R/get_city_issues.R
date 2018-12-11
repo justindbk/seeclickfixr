@@ -10,7 +10,10 @@ get_city_issues <- function(city=NULL, lat=NULL,long=NULL, status = "open,acknow
   if((length(lat)>0 & length(long)<1) | length(lat)<1 & length(long)>0){
     stop("Specify valid lat/long pair or city")
   }
-  url <- paste("https://seeclickfix.com/api/v2/issues?", ifelse(length(city)>0,paste("place_url=",city,sep=""),""),ifelse(length(lat)>0,paste("lat=", lat,"&lng=",long,sep=""),""),"&status=",status, "&per_page=",pagelimit,"&page=",page, sep = "")
+  url <- paste0("https://seeclickfix.com/api/v2/issues?",
+                ifelse(length(city)>0,paste0("place_url=",city),""),
+                ifelse(length(lat)>0,paste0("lat=", lat,"&lng=",long),""),
+                "&status=",status, "&per_page=",pagelimit,"&page=",page)
   url <- gsub(" ","%20",x=url)
   rawdata <- RCurl::getURL(url)
   scf <- jsonlite::fromJSON(txt=rawdata,simplifyDataFrame = T,flatten=F)
@@ -91,7 +94,7 @@ get_city_issues <- function(city=NULL, lat=NULL,long=NULL, status = "open,acknow
   while(limit>total){
     page <- page+1
     if((limit-total)<100){pagelimit <- (limit-total)}
-    url <- paste("https://seeclickfix.com/api/v2/issues?place_url=", city,"&status=",status, "&per_page=",pagelimit,"&page=",page, sep = "")
+    url <- paste0("https://seeclickfix.com/api/v2/issues?place_url=", city,"&status=",status, "&per_page=",pagelimit,"&page=",page)
     rawdata <- readLines(url, warn = F)
     scf <- jsonlite::fromJSON(txt=rawdata,simplifyDataFrame = T,flatten=F)
     issue_id = scf$issues$id
